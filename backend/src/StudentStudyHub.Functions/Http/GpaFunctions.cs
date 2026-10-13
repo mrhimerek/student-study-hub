@@ -12,16 +12,20 @@ namespace StudentStudyHub.Functions.Http;
 /// from the App Service design, but as Azure Functions (isolated worker).
 /// Pattern to replicate for Assignments/StudyGroups/Exams/etc. endpoints.
 /// </summary>
-public class GpaFunctions(IAppDbContext db, ILogger<GpaFunctions> logger)
+public class GpaFunctions(IAppDbContext db, ICurrentUserService currentUser, ILogger<GpaFunctions> logger)
 {
     [Function("GetGpaSummary")]
     public async Task<HttpResponseData> GetGpaSummary(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "gpa/summary")] HttpRequestData req,
-        FunctionContext context)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "gpa/summary")] HttpRequestData req)
     {
-        // TODO: resolve the authenticated user id from the validated JWT (ICurrentUserService),
-        // once the JWT validation middleware (Middleware/JwtAuthMiddleware) is wired up.
-        var userId = GetUserIdFromQuery(req);
+        // JwtAuthMiddleware has already validated the Bearer token (if any) and populated
+        // ICurrentUserService; protected endpoints are responsible for enforcing auth themselves.
+        if (currentUser.UserId is not { } userId)
+        {
+            var unauthorized = req.CreateResponse(HttpStatusCode.Unauthorized);
+            await unauthorized.WriteAsJsonAsync(new { error = "Authentication required." });
+            return unauthorized;
+        }
 
         var courses = db.Courses
             .Where(c => c.UserId == userId)
@@ -35,11 +39,5 @@ public class GpaFunctions(IAppDbContext db, ILogger<GpaFunctions> logger)
         var response = req.CreateResponse(HttpStatusCode.OK);
         await response.WriteAsJsonAsync(summary);
         return response;
-    }
-
-    private static Guid GetUserIdFromQuery(HttpRequestData req)
-    {
-        var query = System.Web.HttpUtility.ParseQueryString(req.Url.Query);
-        return Guid.TryParse(query["userId"], out var id) ? id : Guid.Empty;
     }
 }

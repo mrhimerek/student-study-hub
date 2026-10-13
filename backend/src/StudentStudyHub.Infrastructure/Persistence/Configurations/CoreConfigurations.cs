@@ -87,3 +87,20 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
+{
+    public void Configure(EntityTypeBuilder<RefreshToken> builder)
+    {
+        // TokenHash is a SHA-256 hex digest (unique, used for O(1) lookup on refresh/logout);
+        // the raw refresh token value is never persisted, only its hash.
+        builder.Property(rt => rt.TokenHash).HasMaxLength(64).IsRequired();
+        builder.HasIndex(rt => rt.TokenHash).IsUnique();
+        builder.HasIndex(rt => new { rt.UserId, rt.ExpiresAt });
+
+        builder.HasOne(rt => rt.User)
+            .WithMany(u => u.RefreshTokens)
+            .HasForeignKey(rt => rt.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}

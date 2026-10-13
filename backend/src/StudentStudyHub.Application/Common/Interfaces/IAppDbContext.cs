@@ -23,5 +23,8 @@ public interface IAppDbContext
     IQueryable<Notification> Notifications { get; }
     IQueryable<RefreshToken> RefreshTokens { get; }
 
+    void Add<TEntity>(TEntity entity) where TEntity : class;
+    void Remove<TEntity>(TEntity entity) where TEntity : class;
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

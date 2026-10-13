@@ -2,23 +2,27 @@ using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Azure.Functions.Worker.OpenTelemetry;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry;
+using StudentStudyHub.Application;
 using StudentStudyHub.Application.Common.Interfaces;
-using StudentStudyHub.Infrastructure.Persistence;
+using StudentStudyHub.Functions.Auth;
+using StudentStudyHub.Functions.Middleware;
+using StudentStudyHub.Infrastructure;
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.ConfigureFunctionsWebApplication();
 
-// Register the EF Core DbContext against Azure SQL (connection string pulled from
-// Key Vault / app settings as "SqlConnectionString" in production).
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnectionString")));
-builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+
+// Scoped per-invocation "current user" populated by JwtAuthMiddleware from the validated JWT.
+builder.Services.AddScoped<CurrentUserService>();
+builder.Services.AddScoped<ICurrentUserService>(sp => sp.GetRequiredService<CurrentUserService>());
+
+builder.UseMiddleware<JwtAuthMiddleware>();
 
 if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING")))
 {

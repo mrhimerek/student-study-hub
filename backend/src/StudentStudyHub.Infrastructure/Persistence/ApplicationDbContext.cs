@@ -41,6 +41,13 @@ public class ApplicationDbContext : DbContext, IAppDbContext
     public IQueryable<Notification> Notifications => NotificationsSet;
     public IQueryable<RefreshToken> RefreshTokens => RefreshTokensSet;
 
+    // Explicit interface implementations: DbContext already exposes Add<T>/Remove<T> that return
+    // EntityEntry<T>, so these wrap them with the void signature IAppDbContext declares, without
+    // hiding the base DbContext members for code that references ApplicationDbContext directly.
+    void IAppDbContext.Add<TEntity>(TEntity entity) => Set<TEntity>().Add(entity);
+
+    void IAppDbContext.Remove<TEntity>(TEntity entity) => Set<TEntity>().Remove(entity);
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

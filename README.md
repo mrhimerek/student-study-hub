@@ -61,7 +61,12 @@ and a `local.settings.json` (gitignored) with your SQL connection string:
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "ConnectionStrings:SqlConnectionString": "<your Azure SQL or LocalDB connection string>"
+    "ConnectionStrings:SqlConnectionString": "<your Azure SQL or LocalDB connection string>",
+    "Jwt__Secret": "<a long random local-dev-only secret, 32+ chars>",
+    "Jwt__Issuer": "StudentStudyHub",
+    "Jwt__Audience": "StudentStudyHub.Client",
+    "Jwt__AccessTokenMinutes": "15",
+    "Jwt__RefreshTokenDays": "30"
   }
 }
 ```
