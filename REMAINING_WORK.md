@@ -4,15 +4,15 @@
 > pick back up cleanly in a future session. See `DESIGN.md` for the full
 > architecture/product spec this all traces back to.
 
-Last updated: 2026-10-13. Current `main` HEAD: `f81026d` ("Build Assignments
-frontend UI wired to the real backend API").
+Last updated: 2026-10-13. Current `main` HEAD: builds on `f81026d` with Course
+CRUD + GPA frontend wiring added on top (not yet committed — see below).
 
 ## How to resume
 
 ```powershell
 # Backend
 cd backend
-dotnet test                         # should show 22/22 passing
+dotnet test                         # should show 29/29 passing
 
 cd src/StudentStudyHub.Functions
 func start                          # local API on http://localhost:7071
@@ -38,7 +38,8 @@ migration applied.
 | EF Core + LocalDB | ✅ | `InitialCreate` migration applied; all 14 tables present and verified via live smoke tests |
 | JSON contract | ✅ | camelCase everywhere (`JsonSerializerDefaults.Web`); enums serialize as camelCase strings (e.g. `"notStarted"`), not raw ints |
 | **Assignments / homework tracker** | ✅ | Full CRUD API + FluentValidation + 8 unit tests; full frontend (list, filter tabs, add/edit form, tap-to-cycle status, delete) — **first fully complete vertical slice** |
-| GPA calculator (backend only) | ⚠️ partial | `GpaCalculator.cs` (pure, unit-tested) + `GET /api/gpa/summary` endpoint exist and work, but there's **no way to add/edit Courses yet** (no Course CRUD API), so the endpoint always returns 0 for a real user. No frontend wiring either — Dashboard's GPA card is still mock data. |
+| **Course CRUD** | ✅ | Full CRUD API (`CourseService`/`CourseFunctions`) + FluentValidation + 7 unit tests; full frontend (`features/courses`, `pages/courses/CoursesPage` with add/edit/delete), wired into `router.tsx` at `/courses` (not in bottom nav — reached via the Dashboard GPA card's "Manage courses" link) |
+| **GPA calculator** | ✅ | `GpaCalculator.cs` (pure, unit-tested) + `GET /api/gpa/summary` now return real numbers since Course CRUD exists; Dashboard's GPA card (`features/gpa`) pulls the real weighted GPA via `useGpaSummary()`, replacing the old mock `3.8`; course mutations invalidate the GPA query cache so the Dashboard stays in sync |
 | Dashboard greeting | ✅ | Pulls real `firstName` from `useAuth()` (rest of the dashboard — due-today list, next exam — is still mock data) |
 
 ## ❌ Not started
@@ -51,7 +52,6 @@ types/api/hooks → pages → wire into `router.tsx`.
 
 | Feature | Domain entities already scaffolded | What's needed |
 |---|---|---|
-| **Course CRUD** (blocks GPA calculator) | `Course` | Full CRUD, same pattern as Assignments. Needed before GPA summary is useful. |
 | **Study groups** | `StudyGroup`, `StudyGroupMember` | School-scoped create/join/leave, member list, owner-only edit/delete. Needs a `School` to belong to first — there's currently no School seed data or School CRUD/picker UI. |
 | **Shared notes in study groups** | `GroupNote` | CRUD scoped to group membership (only members can read/write notes for their group). Depends on Study Groups existing first. |
 | **Exam/quiz countdown dashboard** | `Exam` | CRUD + a dashboard widget showing soonest upcoming exam(s) (replace the `mockNextExam` in `DashboardPage.tsx`). |
@@ -86,15 +86,30 @@ types/api/hooks → pages → wire into `router.tsx`.
 
 ## Suggested order for next session
 
-1. **Course CRUD** (small, unblocks GPA calculator being a real feature, follows the exact Assignments pattern)
-2. **Wire GPA calculator into the frontend** (Dashboard GPA card + a simple Courses list/add page)
-3. **Exam countdown** (small-ish, replaces `mockNextExam` on the Dashboard, high visual payoff)
+1. ~~Course CRUD~~ ✅ done
+2. ~~Wire GPA calculator into the frontend~~ ✅ done
+3. **Exam countdown** (small-ish, replaces `mockNextExam` on the Dashboard, high visual payoff) — **start here next**
 4. **Study groups** + **Shared notes** (bigger, but core to the product's name/positioning)
 5. **Scholarship tracker** and **College application tracker** (similar CRUD+status-pipeline shape; can largely copy-paste the Assignments/Course pattern)
 6. **Calendar view** (aggregates everything above — do this after, not before)
 7. **Notifications** (needs most other features to exist first to have something to notify about)
 8. **CI/CD GitHub Actions** (can actually be done any time — doesn't depend on features; worth doing early to protect against regressions as more features land)
 9. **Azure deployment** (do last, once there's a meaningfully complete MVP to deploy)
+
+## Still pending from this session
+
+- **Commit the Course CRUD + GPA wiring changes** — everything above was
+  implemented and smoke-tested live (`func start` + real HTTP calls to
+  `/api/courses` and `/api/gpa/summary`, including create/update/delete and a
+  correct weighted/unweighted GPA computation), and `dotnet test` /
+  `npm run build` / `npm run lint` all pass, but the changes have not been
+  committed yet. New files: `backend/src/StudentStudyHub.Application/Courses/*`,
+  `backend/src/StudentStudyHub.Functions/Http/CourseFunctions.cs`,
+  `backend/tests/.../Courses/CourseServiceTests.cs`,
+  `frontend/src/features/courses/*`, `frontend/src/features/gpa/*`,
+  `frontend/src/pages/courses/*`. Modified:
+  `backend/src/StudentStudyHub.Application/DependencyInjection.cs`,
+  `frontend/src/app/router.tsx`, `frontend/src/pages/dashboard/DashboardPage.tsx`.
 
 ## Known gotchas worth remembering
 

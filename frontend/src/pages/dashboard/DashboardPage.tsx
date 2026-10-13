@@ -1,9 +1,11 @@
+import { Link } from "react-router-dom";
 import { Card } from "../../components/ui/Card";
 import { CountdownBadge } from "../../components/shared/CountdownBadge";
 import { StatusChip } from "../../components/shared/StatusChip";
 import { useAuth } from "../../features/auth/AuthContext";
+import { useGpaSummary } from "../../features/gpa/hooks";
 
-// TODO: replace with real data via TanStack Query hooks (features/assignments, features/exams, etc.)
+// TODO: replace with real data via TanStack Query hooks (features/exams, etc.)
 const mockDueToday = [
   { id: "1", title: "Math HW", priority: "High" as const },
   { id: "2", title: "History Essay", priority: "Medium" as const },
@@ -13,6 +15,7 @@ const mockNextExam = { title: "Biology Final", daysLeft: 2 };
 
 export function DashboardPage() {
   const { user } = useAuth();
+  const { data: gpaSummary, isLoading: isGpaLoading } = useGpaSummary();
 
   return (
     <div className="space-y-4">
@@ -21,7 +24,12 @@ export function DashboardPage() {
       <div className="grid grid-cols-2 gap-3">
         <Card>
           <p className="text-xs text-gray-500">GPA (weighted)</p>
-          <p className="text-2xl font-semibold text-indigo-600">3.8</p>
+          <p className="text-2xl font-semibold text-indigo-600">
+            {isGpaLoading ? "…" : (gpaSummary?.weightedGpa ?? 0).toFixed(2)}
+          </p>
+          <Link to="/courses" className="text-xs font-medium text-indigo-500 hover:underline">
+            Manage courses →
+          </Link>
         </Card>
         <Card>
           <p className="text-xs text-gray-500">Next Exam</p>
