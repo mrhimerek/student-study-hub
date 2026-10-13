@@ -96,20 +96,6 @@ types/api/hooks → pages → wire into `router.tsx`.
 8. **CI/CD GitHub Actions** (can actually be done any time — doesn't depend on features; worth doing early to protect against regressions as more features land)
 9. **Azure deployment** (do last, once there's a meaningfully complete MVP to deploy)
 
-## Still pending from this session
-
-- **Commit the Course CRUD + GPA wiring changes** — everything above was
-  implemented and smoke-tested live (`func start` + real HTTP calls to
-  `/api/courses` and `/api/gpa/summary`, including create/update/delete and a
-  correct weighted/unweighted GPA computation), and `dotnet test` /
-  `npm run build` / `npm run lint` all pass, but the changes have not been
-  committed yet. New files: `backend/src/StudentStudyHub.Application/Courses/*`,
-  `backend/src/StudentStudyHub.Functions/Http/CourseFunctions.cs`,
-  `backend/tests/.../Courses/CourseServiceTests.cs`,
-  `frontend/src/features/courses/*`, `frontend/src/features/gpa/*`,
-  `frontend/src/pages/courses/*`. Modified:
-  `backend/src/StudentStudyHub.Application/DependencyInjection.cs`,
-  `frontend/src/app/router.tsx`, `frontend/src/pages/dashboard/DashboardPage.tsx`.
 
 ## Known gotchas worth remembering
 
