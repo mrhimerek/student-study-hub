@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Azure.Core.Serialization;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Azure.Functions.Worker;
@@ -18,10 +19,14 @@ var builder = FunctionsApplication.CreateBuilder(args);
 builder.ConfigureFunctionsWebApplication();
 
 // Use camelCase JSON (the web/JS convention) for both request binding and response bodies,
-// instead of the Functions Worker's PascalCase-by-default serializer.
+// instead of the Functions Worker's PascalCase-by-default serializer. Enums are also
+// serialized as camelCase strings (e.g. "notStarted") rather than raw ints, so the frontend
+// never has to hardcode the Domain.Enums numeric ordering.
 builder.Services.Configure<WorkerOptions>(options =>
 {
-    options.Serializer = new JsonObjectSerializer(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+    var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    jsonOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+    options.Serializer = new JsonObjectSerializer(jsonOptions);
 });
 
 builder.Services.AddApplication();

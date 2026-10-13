@@ -1,6 +1,7 @@
 import { Card } from "../../components/ui/Card";
 import { CountdownBadge } from "../../components/shared/CountdownBadge";
 import { StatusChip } from "../../components/shared/StatusChip";
+import { useAuth } from "../../features/auth/AuthContext";
 
 // TODO: replace with real data via TanStack Query hooks (features/assignments, features/exams, etc.)
 const mockDueToday = [
@@ -11,9 +12,11 @@ const mockDueToday = [
 const mockNextExam = { title: "Biology Final", daysLeft: 2 };
 
 export function DashboardPage() {
+  const { user } = useAuth();
+
   return (
     <div className="space-y-4">
-      <p className="text-gray-600">Hi, Priya 👋</p>
+      <p className="text-gray-600">Hi, {user?.firstName ?? "there"} 👋</p>
 
       <div className="grid grid-cols-2 gap-3">
         <Card>
