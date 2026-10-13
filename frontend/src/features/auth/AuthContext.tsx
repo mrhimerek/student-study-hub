@@ -12,6 +12,7 @@ interface AuthContextValue {
   login: (payload: LoginRequest) => Promise<void>;
   register: (payload: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (patch: Partial<AuthUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -69,8 +70,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Keeps the cached user in sync after a profile edit, since there's no GET /auth/me to
+  // re-fetch from - ProfilePage calls this with the fields the user is allowed to change
+  // (name/grade) after a successful PUT /api/users/me.
+  const updateUser = (patch: Partial<AuthUser>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...patch };
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  };
+
   const value = useMemo<AuthContextValue>(
-    () => ({ user, isAuthenticated: user !== null, isInitializing, login, register, logout }),
+    () => ({ user, isAuthenticated: user !== null, isInitializing, login, register, logout, updateUser }),
     [user, isInitializing],
   );
 

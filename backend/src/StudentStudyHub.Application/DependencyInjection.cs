@@ -10,6 +10,7 @@ using StudentStudyHub.Application.Notifications;
 using StudentStudyHub.Application.SatPlanning;
 using StudentStudyHub.Application.Scholarships;
 using StudentStudyHub.Application.StudyGroups;
+using StudentStudyHub.Application.Users;
 
 namespace StudentStudyHub.Application;
 
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<ICalendarService, CalendarService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IDeadlineReminderService, DeadlineReminderService>();
+        services.AddScoped<IUserService, UserService>();
 
         return services;
     }

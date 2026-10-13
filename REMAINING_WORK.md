@@ -8,14 +8,15 @@ Last updated: 2026-10-13. Current `main` HEAD: builds on `f81026d` with Course
 CRUD + GPA frontend wiring, then Exam CRUD + countdown dashboard widget, then
 Study Groups + Shared Notes, then Scholarship tracker + College application
 tracker, then SAT study planner, then Calendar view, then Notifications, then
-GitHub Actions CI (`api-ci.yml`/`web-ci.yml`), added on top.
+GitHub Actions CI (`api-ci.yml`/`web-ci.yml`), then the Profile page,
+added on top.
 
 ## How to resume
 
 ```powershell
 # Backend
 cd backend
-dotnet test                         # should show 105/105 passing
+dotnet test                         # should show 113/113 passing
 
 cd src/StudentStudyHub.Functions
 func start                          # local API on http://localhost:7071
@@ -51,18 +52,14 @@ migration applied.
 | **Calendar view** | ✅ | Read-only aggregation endpoint `GET /api/calendar?from=&to=` (`CalendarService`/`CalendarFunctions`) — queries Assignments, Exams, Scholarships, College Applications, and the SAT plan's target test date, scoped by user and the `[from, to]` `DateOnly` range (defaults to the current calendar month server-side if params are omitted), normalizes everything into a single ordered `CalendarEventDto` list (`sourceId`, `type`, `title`, `subtitle`, `date`); 5 unit tests covering aggregation, range filtering, ownership scoping, empty results, and date ordering; frontend (`features/calendar`, `pages/calendar/CalendarPage`) renders a month grid with prev/next navigation, color-coded dots per event type (🔵 assignment, 🟣 exam, 🟡 scholarship, 🟢 college app, 🔴 SAT target), a legend, and a day-detail list linking back to the owning feature page; wired into `router.tsx` at `/calendar`, replacing the old `PlaceholderPage`; Dashboard gained a "Calendar" quick-access card |
 | **Notifications (in-app)** | ✅ | `DeadlineReminderFunction` (hourly timer trigger) now delegates to `IDeadlineReminderService`/`DeadlineReminderService` (Application layer, unit-testable), which scans Assignments (excl. `done`), Exams, Scholarships (excl. `awarded`/`rejected`), and College Applications (excl. `accepted`/`rejected`) across all users for items due in exactly 1 or 3 days, writes a `Notification` row per (user, type, entity) not already notified that calendar day (dedupe check), and calls `IEmailService` for each (best-effort — failures are logged, not thrown); `IEmailService` now has a real registered implementation, `LoggingEmailService` (Infrastructure), which logs the would-be email instead of sending one since no email provider (SendGrid/ACS) is provisioned yet — swappable later without touching any caller; `INotificationService`/`NotificationService` (Application layer) + `NotificationFunctions` expose `GET /api/notifications[?unread=true]`, `GET /api/notifications/unread-count`, `POST /api/notifications/{id}/read`, `POST /api/notifications/read-all`; 11 new unit tests (6 reminder-scan, 5 inbox read/mark-as-read) — **note:** the hourly timer trigger still can't be exercised live locally (the pre-existing Azurite-storage-emulator gotcha noted below), so the scan logic was verified via unit tests and the HTTP endpoints were smoke-tested directly; frontend (`features/notifications`, `pages/notifications/NotificationsPage`) lists notifications with mark-read/mark-all-read, wired into `router.tsx` at `/notifications`; `AppShell` header gained a 🔔 bell icon with a live unread-count badge (polls every 60s) linking to the new page |
 | Dashboard greeting | ✅ | Pulls real `firstName` from `useAuth()` (the due-today list is still mock data, pending Assignments-on-Dashboard wiring) |
+| **Profile page** | ✅ | `IUserService`/`UserService` (Application layer) + `UserFunctions` expose `GET /api/users/me` and `PUT /api/users/me` - unlike every CRUD feature there's no `{id}` route segment, the resource is always "the signed-in user" (mirroring `SatPlanService`'s single-record-per-user shape); `UpdateProfileRequest` takes `firstName`/`lastName`/`gradeLevel` plus an optional free-text `schoolName` that's matched/created against `Schools` by exact trimmed name (same find-or-create pattern as `CreateStudyGroupRequest`, clearing the school if left blank); 8 unit tests covering get/update, school find-or-create/reuse/clear, and not-found; frontend (`features/profile`, `pages/profile/ProfilePage`) replaces the old `PlaceholderPage` (now deleted, since this was its last usage) at `/profile`, showing an avatar-initials summary card plus an edit form, and calls a new `AuthContext.updateUser()` helper to keep the cached header/greeting name in sync after a save (there's still no `GET /auth/me`, so the session user is patched locally rather than re-fetched) |
 
 ## ❌ Not started
 
-These all have a Domain entity already scaffolded (so the data model exists),
-but **no Application service, no Function endpoints, and no frontend** yet.
-Build each the same way Assignments was built: DTOs → FluentValidation →
-service → Functions endpoints → unit tests → smoke test → frontend
-types/api/hooks → pages → wire into `router.tsx`.
-
-| Feature | Domain entities already scaffolded | What's needed |
-|---|---|---|
-| **Profile page** | `User` | Currently a `PlaceholderPage`. Needs a view/edit form for name, grade level, school; likely also where a future avatar upload (`IBlobStorageService` — interface exists, no implementation) would live. |
+Nothing left in this category — every feature with a scaffolded Domain entity
+now has a full vertical slice (Application service, Function endpoints, unit
+tests, and frontend). Remaining work is all in the Infra/ops section below
+(real email provider, file uploads, CD, and actual Azure deployment).
 
 ## 🏗️ Infra / ops not started
 
@@ -110,7 +107,8 @@ types/api/hooks → pages → wire into `router.tsx`.
 7. ~~Calendar view~~ ✅ done
 8. ~~Notifications~~ ✅ done (in-app complete; real email provider still pending — see Infra/ops above)
 9. ~~CI/CD GitHub Actions~~ ✅ CI done (`api-ci.yml`/`web-ci.yml`); CD still pending (needs Azure resources first)
-10. **Azure deployment** (do last, once there's a meaningfully complete MVP to deploy) — **start here next**, then add `api-cd.yml`/`web-cd.yml`
+10. ~~Profile page~~ ✅ done
+11. **Azure deployment** (do last, once there's a meaningfully complete MVP to deploy; no `az` CLI/credentials available in this dev environment, so this requires a session with real Azure access) — **start here next**, then add `api-cd.yml`/`web-cd.yml`
 
 
 ## Known gotchas worth remembering

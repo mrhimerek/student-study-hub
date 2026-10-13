@@ -13,7 +13,7 @@ import { CollegeApplicationsPage } from "../pages/college-applications/CollegeAp
 import { SatPlanPage } from "../pages/sat-plan/SatPlanPage";
 import { CalendarPage } from "../pages/calendar/CalendarPage";
 import { NotificationsPage } from "../pages/notifications/NotificationsPage";
-import { PlaceholderPage } from "../pages/PlaceholderPage";
+import { ProfilePage } from "../pages/profile/ProfilePage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
 export const router = createBrowserRouter([
@@ -140,7 +140,7 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <AppShell>
-          <PlaceholderPage title="Profile" />
+          <ProfilePage />
         </AppShell>
       </ProtectedRoute>
     ),
