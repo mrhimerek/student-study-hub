@@ -111,6 +111,13 @@ export function DashboardPage() {
             Manage SAT plan →
           </Link>
         </Card>
+        <Card>
+          <p className="text-xs text-gray-500">Calendar</p>
+          <p className="text-sm font-medium">All your deadlines, one view</p>
+          <Link to="/calendar" className="text-xs font-medium text-indigo-500 hover:underline">
+            Open calendar →
+          </Link>
+        </Card>
       </div>
 
       <section>

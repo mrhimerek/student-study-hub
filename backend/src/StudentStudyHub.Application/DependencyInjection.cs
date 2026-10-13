@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using StudentStudyHub.Application.Assignments;
 using StudentStudyHub.Application.Auth;
+using StudentStudyHub.Application.Calendar;
 using StudentStudyHub.Application.CollegeApplications;
 using StudentStudyHub.Application.Courses;
 using StudentStudyHub.Application.Exams;
@@ -25,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IGroupNoteService, GroupNoteService>();
         services.AddScoped<IScholarshipService, ScholarshipService>();
         services.AddScoped<ICollegeApplicationService, CollegeApplicationService>();
+        services.AddScoped<ICalendarService, CalendarService>();
 
         return services;
     }

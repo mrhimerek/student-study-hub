@@ -7,14 +7,14 @@
 Last updated: 2026-10-13. Current `main` HEAD: builds on `f81026d` with Course
 CRUD + GPA frontend wiring, then Exam CRUD + countdown dashboard widget, then
 Study Groups + Shared Notes, then Scholarship tracker + College application
-tracker, then SAT study planner, added on top.
+tracker, then SAT study planner, then Calendar view, added on top.
 
 ## How to resume
 
 ```powershell
 # Backend
 cd backend
-dotnet test                         # should show 88/88 passing
+dotnet test                         # should show 93/93 passing
 
 cd src/StudentStudyHub.Functions
 func start                          # local API on http://localhost:7071
@@ -47,6 +47,7 @@ migration applied.
 | **Scholarship tracker** | ✅ | Full CRUD API (`ScholarshipService`/`ScholarshipFunctions`) + FluentValidation + 10 unit tests; single-owner (like Course/Exam, not membership-scoped), status pipeline `researching → applying → submitted → awarded/rejected`, optional `amount`, deadline, and a simple checklist (`Requirements: string[]`) persisted as a JSON column (`RequirementsJson`) and (de)serialized in the service; full frontend (`features/scholarships`, `pages/scholarships/{ScholarshipsPage,ScholarshipCard,ScholarshipForm}`) wired into `router.tsx` at `/scholarships`; Dashboard gained a "Scholarships" card showing the soonest open deadline |
 | **College application tracker** | ✅ | Full CRUD API (`CollegeApplicationService`/`CollegeApplicationFunctions`) + FluentValidation + 10 unit tests; single-owner, status pipeline `notStarted → inProgress → submitted → accepted/rejected/waitlisted`, `applicationType` (`earlyDecision`/`earlyAction`/`regularDecision`/`rolling`), deadline, and the same JSON-backed `Requirements: string[]` checklist pattern as Scholarships; full frontend (`features/collegeApplications`, `pages/college-applications/{CollegeApplicationsPage,CollegeApplicationCard,CollegeApplicationForm}`) wired into `router.tsx` at `/college-applications`; Dashboard gained a "College Apps" card showing the soonest open deadline |
 | **SAT study planner** | ✅ | Full CRUD API (`SatPlanService`/`SatPlanFunctions`) + FluentValidation + 13 unit tests; unlike the other trackers this is a **single-record-per-user** resource (no `{id}}` route segment) with a nested practice-score log (`SatPracticeScore`, scoped by `SatPlanId`) - `GET /api/sat-plan` returns 204 when the user hasn't created a plan yet, `POST` throws a `DomainException` → 400 if a plan already exists, `POST/DELETE /api/sat-plan/scores[/{scoreId}]` log/remove a practice test score and return the refreshed plan; full frontend (`features/satPlan`, `pages/sat-plan/{SatPlanPage,SatPlanForm,SatPracticeScoreForm}`) wired into `router.tsx` at `/sat-plan`, showing goal/latest/best score plus a countdown to the target test date; Dashboard gained an "SAT Plan" card |
+| **Calendar view** | ✅ | Read-only aggregation endpoint `GET /api/calendar?from=&to=` (`CalendarService`/`CalendarFunctions`) — queries Assignments, Exams, Scholarships, College Applications, and the SAT plan's target test date, scoped by user and the `[from, to]` `DateOnly` range (defaults to the current calendar month server-side if params are omitted), normalizes everything into a single ordered `CalendarEventDto` list (`sourceId`, `type`, `title`, `subtitle`, `date`); 5 unit tests covering aggregation, range filtering, ownership scoping, empty results, and date ordering; frontend (`features/calendar`, `pages/calendar/CalendarPage`) renders a month grid with prev/next navigation, color-coded dots per event type (🔵 assignment, 🟣 exam, 🟡 scholarship, 🟢 college app, 🔴 SAT target), a legend, and a day-detail list linking back to the owning feature page; wired into `router.tsx` at `/calendar`, replacing the old `PlaceholderPage`; Dashboard gained a "Calendar" quick-access card |
 | Dashboard greeting | ✅ | Pulls real `firstName` from `useAuth()` (the due-today list is still mock data, pending Assignments-on-Dashboard wiring) |
 
 ## ❌ Not started
@@ -59,7 +60,6 @@ types/api/hooks → pages → wire into `router.tsx`.
 
 | Feature | Domain entities already scaffolded | What's needed |
 |---|---|---|
-| **Calendar view** | *(aggregates the above)* | A month/week view that pulls due dates from Assignments + Exams + Scholarship/College deadlines into one place. Build last, once those features exist. |
 | **Notifications (in-app + email)** | `Notification` | `DeadlineReminderFunction` (hourly timer trigger) is a **stub only** — it has a `TODO` comment and does nothing yet. Needs: (1) query logic to find assignments/exams/scholarships/applications due in 1 or 3 days, (2) dedupe against existing `Notification` rows so the same deadline doesn't re-notify every hour, (3) an actual `IEmailService` implementation (interface exists, no implementation — e.g. Azure Communication Services or SendGrid), (4) a frontend notifications bell/list UI. |
 | **Profile page** | `User` | Currently a `PlaceholderPage`. Needs a view/edit form for name, grade level, school; likely also where a future avatar upload (`IBlobStorageService` — interface exists, no implementation) would live. |
 
@@ -93,8 +93,8 @@ types/api/hooks → pages → wire into `router.tsx`.
 4. ~~Study groups + Shared notes~~ ✅ done
 5. ~~Scholarship tracker and College application tracker~~ ✅ done
 6. ~~SAT study planner~~ ✅ done
-7. **Calendar view** (aggregates everything above — do this next) — **start here next**
-8. **Notifications** (needs most other features to exist first to have something to notify about)
+7. ~~Calendar view~~ ✅ done
+8. **Notifications** (needs most other features to exist first to have something to notify about) — **start here next**
 9. **CI/CD GitHub Actions** (can actually be done any time — doesn't depend on features; worth doing early to protect against regressions as more features land)
 10. **Azure deployment** (do last, once there's a meaningfully complete MVP to deploy)
 
