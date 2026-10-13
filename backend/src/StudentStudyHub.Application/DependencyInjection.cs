@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StudentStudyHub.Application.Assignments;
 using StudentStudyHub.Application.Auth;
 using StudentStudyHub.Application.Courses;
+using StudentStudyHub.Application.Exams;
 
 namespace StudentStudyHub.Application;
 
@@ -14,6 +15,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<ICourseService, CourseService>();
+        services.AddScoped<IExamService, ExamService>();
 
         return services;
     }

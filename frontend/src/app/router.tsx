@@ -5,6 +5,7 @@ import { LoginPage } from "../pages/auth/LoginPage";
 import { RegisterPage } from "../pages/auth/RegisterPage";
 import { AssignmentsPage } from "../pages/assignments/AssignmentsPage";
 import { CoursesPage } from "../pages/courses/CoursesPage";
+import { ExamsPage } from "../pages/exams/ExamsPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
@@ -43,6 +44,16 @@ export const router = createBrowserRouter([
       <ProtectedRoute>
         <AppShell>
           <CoursesPage />
+        </AppShell>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/exams",
+    element: (
+      <ProtectedRoute>
+        <AppShell>
+          <ExamsPage />
         </AppShell>
       </ProtectedRoute>
     ),

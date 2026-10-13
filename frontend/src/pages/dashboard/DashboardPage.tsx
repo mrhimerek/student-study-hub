@@ -4,18 +4,24 @@ import { CountdownBadge } from "../../components/shared/CountdownBadge";
 import { StatusChip } from "../../components/shared/StatusChip";
 import { useAuth } from "../../features/auth/AuthContext";
 import { useGpaSummary } from "../../features/gpa/hooks";
+import { useNextExam } from "../../features/exams/hooks";
 
-// TODO: replace with real data via TanStack Query hooks (features/exams, etc.)
+// TODO: replace with real data via TanStack Query hooks (features/assignments)
 const mockDueToday = [
   { id: "1", title: "Math HW", priority: "High" as const },
   { id: "2", title: "History Essay", priority: "Medium" as const },
 ];
 
-const mockNextExam = { title: "Biology Final", daysLeft: 2 };
+function daysUntil(isoDate: string): number {
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const diff = new Date(isoDate).getTime() - Date.now();
+  return Math.max(0, Math.ceil(diff / msPerDay));
+}
 
 export function DashboardPage() {
   const { user } = useAuth();
   const { data: gpaSummary, isLoading: isGpaLoading } = useGpaSummary();
+  const { data: nextExam, isLoading: isExamLoading } = useNextExam();
 
   return (
     <div className="space-y-4">
@@ -33,8 +39,19 @@ export function DashboardPage() {
         </Card>
         <Card>
           <p className="text-xs text-gray-500">Next Exam</p>
-          <p className="text-sm font-medium">{mockNextExam.title}</p>
-          <CountdownBadge days={mockNextExam.daysLeft} />
+          {isExamLoading ? (
+            <p className="text-sm text-gray-400">Loading…</p>
+          ) : nextExam ? (
+            <>
+              <p className="text-sm font-medium">{nextExam.title}</p>
+              <CountdownBadge days={daysUntil(nextExam.examDate)} />
+            </>
+          ) : (
+            <p className="text-sm text-gray-400">No exams scheduled</p>
+          )}
+          <Link to="/exams" className="text-xs font-medium text-indigo-500 hover:underline">
+            Manage exams →
+          </Link>
         </Card>
       </div>
 
