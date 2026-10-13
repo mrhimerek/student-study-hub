@@ -7,8 +7,8 @@
 Last updated: 2026-10-13. Current `main` HEAD: builds on `f81026d` with Course
 CRUD + GPA frontend wiring, then Exam CRUD + countdown dashboard widget, then
 Study Groups + Shared Notes, then Scholarship tracker + College application
-tracker, then SAT study planner, then Calendar view, then Notifications,
-added on top.
+tracker, then SAT study planner, then Calendar view, then Notifications, then
+GitHub Actions CI (`api-ci.yml`/`web-ci.yml`), added on top.
 
 ## How to resume
 
@@ -66,9 +66,20 @@ types/api/hooks → pages → wire into `router.tsx`.
 
 ## 🏗️ Infra / ops not started
 
-- **CI/CD**: no GitHub Actions workflow yet. Should run `dotnet test` (backend)
-  and `npm run build` (frontend, which includes `tsc -b`) on every push/PR.
-  See `DESIGN.md` Section 14 for the originally designed pipeline.
+- **CI**: ✅ done — `.github/workflows/api-ci.yml` (restore/build/test the
+  `.slnx` in Release + `dotnet list package --vulnerable`) and
+  `.github/workflows/web-ci.yml` (`npm ci` + `npm run lint` + `npm run build`,
+  which includes `tsc -b`) both run on push/PR to `main` touching their
+  respective `backend/`/`frontend/` paths. Modeled on `DESIGN.md` Section 14
+  but adapted to this repo's actual layout (`backend/StudentStudyHub.slnx`,
+  no solution-wide test project with real tests yet in
+  `Domain.UnitTests`/`Functions.IntegrationTests` — both currently empty
+  placeholders, which `dotnet test` treats as a 0-exit-code pass, not a
+  failure).
+- **CD (deploy-on-merge)**: not started — no Azure resources are provisioned
+  yet, so there's nothing to deploy to. Add `api-cd.yml`/`web-cd.yml` once the
+  Azure deployment item below is done and deployment credentials exist as
+  GitHub Environment secrets.
 - **Actual Azure deployment**: everything so far has only been run and verified
   locally (LocalDB + `func start` + Vite dev server). Nothing has been deployed
   to Azure Static Web Apps / Azure Functions / Azure SQL yet. `DESIGN.md`
@@ -98,8 +109,8 @@ types/api/hooks → pages → wire into `router.tsx`.
 6. ~~SAT study planner~~ ✅ done
 7. ~~Calendar view~~ ✅ done
 8. ~~Notifications~~ ✅ done (in-app complete; real email provider still pending — see Infra/ops above)
-9. **CI/CD GitHub Actions** (can actually be done any time — doesn't depend on features; worth doing early to protect against regressions as more features land) — **start here next**
-10. **Azure deployment** (do last, once there's a meaningfully complete MVP to deploy)
+9. ~~CI/CD GitHub Actions~~ ✅ CI done (`api-ci.yml`/`web-ci.yml`); CD still pending (needs Azure resources first)
+10. **Azure deployment** (do last, once there's a meaningfully complete MVP to deploy) — **start here next**, then add `api-cd.yml`/`web-cd.yml`
 
 
 ## Known gotchas worth remembering
