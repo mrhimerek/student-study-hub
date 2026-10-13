@@ -1,6 +1,6 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using StudentStudyHub.Application.Common.Interfaces;
+using StudentStudyHub.Application.Notifications;
 
 namespace StudentStudyHub.Functions.Timers;
 
@@ -10,20 +10,15 @@ namespace StudentStudyHub.Functions.Timers;
 /// days and 1 day, writing an in-app Notification and sending a reminder
 /// email (via IEmailService) for each one not already notified.
 /// </summary>
-public class DeadlineReminderFunction(IAppDbContext db, IEmailService emailService, ILogger<DeadlineReminderFunction> logger)
+public class DeadlineReminderFunction(IDeadlineReminderService reminderService, ILogger<DeadlineReminderFunction> logger)
 {
     [Function("DeadlineReminderFunction")]
     public async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo timer)
     {
         logger.LogInformation("Deadline reminder scan started at {Time}", DateTime.UtcNow);
 
-        // TODO: query Assignments/Exams/Scholarships/CollegeApplications due in
-        // 3 days or 1 day, skip ones already notified (track via Notification
-        // table + RelatedEntityId), write Notification rows, and call
-        // emailService.SendEmailAsync(...) for each affected user.
+        var created = await reminderService.ScanAndNotifyAsync();
 
-        await db.SaveChangesAsync();
-
-        logger.LogInformation("Deadline reminder scan completed at {Time}", DateTime.UtcNow);
+        logger.LogInformation("Deadline reminder scan completed at {Time}; created {Count} notifications", DateTime.UtcNow, created);
     }
 }

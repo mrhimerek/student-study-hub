@@ -6,6 +6,7 @@ using StudentStudyHub.Application.Calendar;
 using StudentStudyHub.Application.CollegeApplications;
 using StudentStudyHub.Application.Courses;
 using StudentStudyHub.Application.Exams;
+using StudentStudyHub.Application.Notifications;
 using StudentStudyHub.Application.SatPlanning;
 using StudentStudyHub.Application.Scholarships;
 using StudentStudyHub.Application.StudyGroups;
@@ -27,6 +28,8 @@ public static class DependencyInjection
         services.AddScoped<IScholarshipService, ScholarshipService>();
         services.AddScoped<ICollegeApplicationService, CollegeApplicationService>();
         services.AddScoped<ICalendarService, CalendarService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IDeadlineReminderService, DeadlineReminderService>();
 
         return services;
     }

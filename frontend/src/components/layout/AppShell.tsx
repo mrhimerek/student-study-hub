@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext";
+import { useUnreadNotificationCount } from "../../features/notifications/hooks";
 
 const NAV_ITEMS = [
   { to: "/", label: "Home", icon: "🏠" },
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { data: unreadCount } = useUnreadNotificationCount();
 
   const handleLogout = async () => {
     await logout();
@@ -24,14 +26,24 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
         <h1 className="text-lg font-semibold text-indigo-600">Student Study Hub</h1>
         {user && (
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="text-xs font-medium text-gray-400 hover:text-gray-600"
-            title={`Log out ${user.firstName}`}
-          >
-            Log out
-          </button>
+          <div className="flex items-center gap-3">
+            <Link to="/notifications" className="relative text-lg" title="Notifications">
+              🔔
+              {!!unreadCount && unreadCount > 0 && (
+                <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-semibold text-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="text-xs font-medium text-gray-400 hover:text-gray-600"
+              title={`Log out ${user.firstName}`}
+            >
+              Log out
+            </button>
+          </div>
         )}
       </header>
 

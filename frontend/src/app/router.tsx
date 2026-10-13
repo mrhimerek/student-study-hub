@@ -12,6 +12,7 @@ import { ScholarshipsPage } from "../pages/scholarships/ScholarshipsPage";
 import { CollegeApplicationsPage } from "../pages/college-applications/CollegeApplicationsPage";
 import { SatPlanPage } from "../pages/sat-plan/SatPlanPage";
 import { CalendarPage } from "../pages/calendar/CalendarPage";
+import { NotificationsPage } from "../pages/notifications/NotificationsPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
@@ -120,6 +121,16 @@ export const router = createBrowserRouter([
       <ProtectedRoute>
         <AppShell>
           <CalendarPage />
+        </AppShell>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/notifications",
+    element: (
+      <ProtectedRoute>
+        <AppShell>
+          <NotificationsPage />
         </AppShell>
       </ProtectedRoute>
     ),
