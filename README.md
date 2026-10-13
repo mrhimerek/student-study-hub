@@ -83,7 +83,10 @@ Builds with `npm run build`; type-checks with `npx tsc --noEmit`.
 
 ## Status
 
-🚧 Early scaffold — see `DESIGN.md` for the full roadmap (Section 16) and
-MVP vs. future feature breakdown (Section 17). The GPA calculator (`GpaCalculator.cs`)
-is the first fully implemented and unit-tested feature; everything else follows the
-same Clean Architecture pattern.
+🏗️ In progress — auth (register/login/refresh/logout) and the homework/
+assignment tracker are fully implemented end-to-end (backend + frontend,
+tested). See [`REMAINING_WORK.md`](./REMAINING_WORK.md) for exactly what's
+done, what's left, and a suggested order to tackle it next — written so a
+future session can resume without re-discovering context. `DESIGN.md` has
+the full original roadmap (Section 16) and MVP vs. future feature breakdown
+(Section 17).
