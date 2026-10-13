@@ -5,6 +5,8 @@ import { StatusChip } from "../../components/shared/StatusChip";
 import { useAuth } from "../../features/auth/AuthContext";
 import { useGpaSummary } from "../../features/gpa/hooks";
 import { useNextExam } from "../../features/exams/hooks";
+import { useScholarships } from "../../features/scholarships/hooks";
+import { useCollegeApplications } from "../../features/collegeApplications/hooks";
 
 // TODO: replace with real data via TanStack Query hooks (features/assignments)
 const mockDueToday = [
@@ -18,10 +20,28 @@ function daysUntil(isoDate: string): number {
   return Math.max(0, Math.ceil(diff / msPerDay));
 }
 
+function soonestDeadline(deadlines: string[]): string | null {
+  if (deadlines.length === 0) {
+    return null;
+  }
+  return deadlines.reduce((soonest, d) => (d < soonest ? d : soonest));
+}
+
 export function DashboardPage() {
   const { user } = useAuth();
   const { data: gpaSummary, isLoading: isGpaLoading } = useGpaSummary();
   const { data: nextExam, isLoading: isExamLoading } = useNextExam();
+  const { data: scholarships } = useScholarships();
+  const { data: collegeApplications } = useCollegeApplications();
+
+  const nextScholarshipDeadline = soonestDeadline(
+    (scholarships ?? []).filter((s) => s.status !== "awarded" && s.status !== "rejected").map((s) => s.deadline),
+  );
+  const nextCollegeDeadline = soonestDeadline(
+    (collegeApplications ?? [])
+      .filter((a) => a.status !== "accepted" && a.status !== "rejected")
+      .map((a) => a.deadline),
+  );
 
   return (
     <div className="space-y-4">
@@ -51,6 +71,28 @@ export function DashboardPage() {
           )}
           <Link to="/exams" className="text-xs font-medium text-indigo-500 hover:underline">
             Manage exams →
+          </Link>
+        </Card>
+        <Card>
+          <p className="text-xs text-gray-500">Scholarships</p>
+          {nextScholarshipDeadline ? (
+            <CountdownBadge days={daysUntil(nextScholarshipDeadline)} />
+          ) : (
+            <p className="text-sm text-gray-400">No open deadlines</p>
+          )}
+          <Link to="/scholarships" className="text-xs font-medium text-indigo-500 hover:underline">
+            Manage scholarships →
+          </Link>
+        </Card>
+        <Card>
+          <p className="text-xs text-gray-500">College Apps</p>
+          {nextCollegeDeadline ? (
+            <CountdownBadge days={daysUntil(nextCollegeDeadline)} />
+          ) : (
+            <p className="text-sm text-gray-400">No open deadlines</p>
+          )}
+          <Link to="/college-applications" className="text-xs font-medium text-indigo-500 hover:underline">
+            Manage applications →
           </Link>
         </Card>
       </div>

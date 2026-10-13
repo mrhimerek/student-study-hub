@@ -8,6 +8,8 @@ import { CoursesPage } from "../pages/courses/CoursesPage";
 import { ExamsPage } from "../pages/exams/ExamsPage";
 import { StudyGroupsPage } from "../pages/study-groups/StudyGroupsPage";
 import { StudyGroupDetailPage } from "../pages/study-groups/StudyGroupDetailPage";
+import { ScholarshipsPage } from "../pages/scholarships/ScholarshipsPage";
+import { CollegeApplicationsPage } from "../pages/college-applications/CollegeApplicationsPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
@@ -76,6 +78,26 @@ export const router = createBrowserRouter([
       <ProtectedRoute>
         <AppShell>
           <StudyGroupDetailPage />
+        </AppShell>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/scholarships",
+    element: (
+      <ProtectedRoute>
+        <AppShell>
+          <ScholarshipsPage />
+        </AppShell>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/college-applications",
+    element: (
+      <ProtectedRoute>
+        <AppShell>
+          <CollegeApplicationsPage />
         </AppShell>
       </ProtectedRoute>
     ),
