@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/StudentStudyHub.Application/StudentStudyHub.Application.csproj" />
+    <Project Path="src/StudentStudyHub.Domain/StudentStudyHub.Domain.csproj" />
+    <Project Path="src/StudentStudyHub.Functions/StudentStudyHub.Functions.csproj" />
+    <Project Path="src/StudentStudyHub.Infrastructure/StudentStudyHub.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/StudentStudyHub.Application.UnitTests/StudentStudyHub.Application.UnitTests.csproj" />
+    <Project Path="tests/StudentStudyHub.Domain.UnitTests/StudentStudyHub.Domain.UnitTests.csproj" />
+    <Project Path="tests/StudentStudyHub.Functions.IntegrationTests/StudentStudyHub.Functions.IntegrationTests.csproj" />
+  </Folder>
+</Solution>
