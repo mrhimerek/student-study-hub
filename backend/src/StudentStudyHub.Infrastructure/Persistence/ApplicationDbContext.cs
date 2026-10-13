@@ -52,5 +52,17 @@ public class ApplicationDbContext : DbContext, IAppDbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
+
+        // EF Core's default table-naming convention uses the DbSet<T> property name (e.g. "UsersSet"),
+        // since those are named *Set to avoid clashing with the IAppDbContext IQueryable<T> projection
+        // properties of the same plural name. Strip the suffix so actual SQL table names stay clean.
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            var tableName = entityType.GetTableName();
+            if (tableName is not null && tableName.EndsWith("Set", StringComparison.Ordinal))
+            {
+                entityType.SetTableName(tableName[..^"Set".Length]);
+            }
+        }
     }
 }

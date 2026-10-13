@@ -104,3 +104,32 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+public class CourseConfiguration : IEntityTypeConfiguration<Course>
+{
+    public void Configure(EntityTypeBuilder<Course> builder)
+    {
+        builder.Property(c => c.CreditHours).HasPrecision(4, 2);
+        builder.Property(c => c.Name).HasMaxLength(150).IsRequired();
+        builder.Property(c => c.GradeValue).HasMaxLength(5).IsRequired();
+
+        builder.HasOne(c => c.User)
+            .WithMany(u => u.Courses)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class ScholarshipConfiguration : IEntityTypeConfiguration<Scholarship>
+{
+    public void Configure(EntityTypeBuilder<Scholarship> builder)
+    {
+        builder.Property(s => s.Amount).HasPrecision(10, 2);
+        builder.Property(s => s.Name).HasMaxLength(200).IsRequired();
+
+        builder.HasOne(s => s.User)
+            .WithMany(u => u.Scholarships)
+            .HasForeignKey(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
