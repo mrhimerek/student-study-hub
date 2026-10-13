@@ -1,16 +1,10 @@
 export interface AuthUser {
-  userId: string;
+  id: string;
   email: string;
   firstName: string;
   lastName: string;
-  schoolId: string | null;
   gradeLevel: number;
-  emailVerified: boolean;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
+  schoolId: string | null;
 }
 
 export interface RegisterRequest {
@@ -18,11 +12,23 @@ export interface RegisterRequest {
   password: string;
   firstName: string;
   lastName: string;
-  schoolId: string;
   gradeLevel: number;
+  schoolId: string | null;
 }
 
-export interface LoginResponse {
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResult {
   accessToken: string;
+  refreshToken: string;
+  accessTokenExpiresAt: string;
   user: AuthUser;
+}
+
+export interface ApiErrorBody {
+  error?: string;
+  errors?: string[];
 }

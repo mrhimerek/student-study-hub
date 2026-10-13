@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Azure.Core.Serialization;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
@@ -14,6 +16,13 @@ using StudentStudyHub.Infrastructure;
 var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.ConfigureFunctionsWebApplication();
+
+// Use camelCase JSON (the web/JS convention) for both request binding and response bodies,
+// instead of the Functions Worker's PascalCase-by-default serializer.
+builder.Services.Configure<WorkerOptions>(options =>
+{
+    options.Serializer = new JsonObjectSerializer(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+});
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
