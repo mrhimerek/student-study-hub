@@ -6,6 +6,8 @@ import { RegisterPage } from "../pages/auth/RegisterPage";
 import { AssignmentsPage } from "../pages/assignments/AssignmentsPage";
 import { CoursesPage } from "../pages/courses/CoursesPage";
 import { ExamsPage } from "../pages/exams/ExamsPage";
+import { StudyGroupsPage } from "../pages/study-groups/StudyGroupsPage";
+import { StudyGroupDetailPage } from "../pages/study-groups/StudyGroupDetailPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
@@ -63,7 +65,17 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <AppShell>
-          <PlaceholderPage title="Study Groups" />
+          <StudyGroupsPage />
+        </AppShell>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/study-groups/:id",
+    element: (
+      <ProtectedRoute>
+        <AppShell>
+          <StudyGroupDetailPage />
         </AppShell>
       </ProtectedRoute>
     ),

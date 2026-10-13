@@ -32,6 +32,13 @@ internal static class ApiResponses
         return response;
     }
 
+    public static async Task<HttpResponseData> ForbiddenAsync(HttpRequestData req, string message)
+    {
+        var response = req.CreateResponse(HttpStatusCode.Forbidden);
+        await response.WriteAsJsonAsync(new { error = message });
+        return response;
+    }
+
     public static async Task<HttpResponseData> ValidationFailedAsync(HttpRequestData req, ValidationResult validation)
     {
         var response = req.CreateResponse(HttpStatusCode.BadRequest);

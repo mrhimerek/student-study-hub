@@ -14,3 +14,15 @@ public class DomainException : Exception
     {
     }
 }
+
+/// <summary>
+/// Thrown when the current user is a known party to the resource (e.g. a non-owner member of a
+/// study group they belong to) but lacks permission for the specific action attempted. Distinct
+/// from NotFoundException, which is used when the resource should look invisible to the caller.
+/// </summary>
+public class ForbiddenException : Exception
+{
+    public ForbiddenException(string message) : base(message)
+    {
+    }
+}

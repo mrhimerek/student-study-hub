@@ -4,6 +4,7 @@ using StudentStudyHub.Application.Assignments;
 using StudentStudyHub.Application.Auth;
 using StudentStudyHub.Application.Courses;
 using StudentStudyHub.Application.Exams;
+using StudentStudyHub.Application.StudyGroups;
 
 namespace StudentStudyHub.Application;
 
@@ -16,6 +17,8 @@ public static class DependencyInjection
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<IExamService, ExamService>();
+        services.AddScoped<IStudyGroupService, StudyGroupService>();
+        services.AddScoped<IGroupNoteService, GroupNoteService>();
 
         return services;
     }
