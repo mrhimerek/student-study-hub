@@ -5,6 +5,7 @@ using StudentStudyHub.Application.Auth;
 using StudentStudyHub.Application.CollegeApplications;
 using StudentStudyHub.Application.Courses;
 using StudentStudyHub.Application.Exams;
+using StudentStudyHub.Application.SatPlanning;
 using StudentStudyHub.Application.Scholarships;
 using StudentStudyHub.Application.StudyGroups;
 
@@ -19,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<IExamService, ExamService>();
+        services.AddScoped<ISatPlanService, SatPlanService>();
         services.AddScoped<IStudyGroupService, StudyGroupService>();
         services.AddScoped<IGroupNoteService, GroupNoteService>();
         services.AddScoped<IScholarshipService, ScholarshipService>();

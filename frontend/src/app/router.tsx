@@ -10,6 +10,7 @@ import { StudyGroupsPage } from "../pages/study-groups/StudyGroupsPage";
 import { StudyGroupDetailPage } from "../pages/study-groups/StudyGroupDetailPage";
 import { ScholarshipsPage } from "../pages/scholarships/ScholarshipsPage";
 import { CollegeApplicationsPage } from "../pages/college-applications/CollegeApplicationsPage";
+import { SatPlanPage } from "../pages/sat-plan/SatPlanPage";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
@@ -98,6 +99,16 @@ export const router = createBrowserRouter([
       <ProtectedRoute>
         <AppShell>
           <CollegeApplicationsPage />
+        </AppShell>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/sat-plan",
+    element: (
+      <ProtectedRoute>
+        <AppShell>
+          <SatPlanPage />
         </AppShell>
       </ProtectedRoute>
     ),

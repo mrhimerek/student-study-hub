@@ -7,6 +7,7 @@ import { useGpaSummary } from "../../features/gpa/hooks";
 import { useNextExam } from "../../features/exams/hooks";
 import { useScholarships } from "../../features/scholarships/hooks";
 import { useCollegeApplications } from "../../features/collegeApplications/hooks";
+import { useSatPlan } from "../../features/satPlan/hooks";
 
 // TODO: replace with real data via TanStack Query hooks (features/assignments)
 const mockDueToday = [
@@ -33,6 +34,7 @@ export function DashboardPage() {
   const { data: nextExam, isLoading: isExamLoading } = useNextExam();
   const { data: scholarships } = useScholarships();
   const { data: collegeApplications } = useCollegeApplications();
+  const { data: satPlan } = useSatPlan();
 
   const nextScholarshipDeadline = soonestDeadline(
     (scholarships ?? []).filter((s) => s.status !== "awarded" && s.status !== "rejected").map((s) => s.deadline),
@@ -93,6 +95,20 @@ export function DashboardPage() {
           )}
           <Link to="/college-applications" className="text-xs font-medium text-indigo-500 hover:underline">
             Manage applications →
+          </Link>
+        </Card>
+        <Card>
+          <p className="text-xs text-gray-500">SAT Plan</p>
+          {satPlan ? (
+            <>
+              <p className="text-sm font-medium">Goal {satPlan.goalScore}</p>
+              <CountdownBadge days={daysUntil(satPlan.targetTestDate)} />
+            </>
+          ) : (
+            <p className="text-sm text-gray-400">No plan set yet</p>
+          )}
+          <Link to="/sat-plan" className="text-xs font-medium text-indigo-500 hover:underline">
+            Manage SAT plan →
           </Link>
         </Card>
       </div>
